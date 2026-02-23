@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 interface JwtPayload {
   id: string;
   email: string;
+  role: string;
 }
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
@@ -25,12 +26,28 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
       process.env.JWT_SECRET as string,
     ) as JwtPayload;
   
-    (req as any).user = {id: decoded.id}
+    (req as any).user = {id: decoded.id};
+    (req as any).role = {role: decoded.role};
   
     next();
   } catch (error) {
     return res.status(401).json({message: "Invalid or expired token"})
   }
+}
 
-
+export const hasAccess = (requiredRoles: string[]) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const role = (req as any).role?.role;
+      if (!role) {
+        return res.status(403).json({message: "Forbidden"})
+      }
+      if (!requiredRoles.includes(role)) {
+        return res.status(403).json({message: "Forbidden"})
+      }
+      next();
+    } catch (error) {
+      return res.status(403).json({message: "Forbidden"})
+    }
+  }
 }

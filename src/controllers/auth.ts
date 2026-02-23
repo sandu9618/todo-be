@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createUser, getUserByEmail, userLogin } from "../services/auth.service.js";
+import { createUser, getAllUsers, getUserByEmail, userLogin } from "../services/auth.service.js";
 import { Errors } from "../enum/error.enum.js";
 
 export const signup = async (req: Request, res: Response) => {
@@ -39,5 +39,14 @@ export const getUser = async (req: Request, res: Response) => {
     } else {
       return res.status(500).json({message: error.message});
     }
+  }
+}
+
+export const getUsers = async (req: Request, res: Response) => {
+  try {
+    const response = await getAllUsers();
+    return res.status(200).json(response);
+  } catch (error: any) {
+    return res.status(500).json({message: error.message});
   }
 }
