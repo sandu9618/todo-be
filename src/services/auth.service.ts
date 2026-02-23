@@ -74,5 +74,5 @@ export const getUserByEmail = async (email: string) => {
 
 export const getAllUsers = async () => {
   const users = await User.find();
-  return {data: users};
+  return users;
 }

@@ -14,6 +14,19 @@ export const getTodos = async (req: Request, res: Response) => {
   }
 };
 
+export const getTodosByUserId = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId as string;
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+    const todos = await Todo.find({ userId: new Types.ObjectId(userId) }).sort({ createdAt: -1 });
+    return res.status(200).json(todos);
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 export const createTodo = async (req: Request, res: Response) => {
   try {
     const userId = getUserId(req);
